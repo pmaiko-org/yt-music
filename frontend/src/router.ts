@@ -1,5 +1,7 @@
 import { createWebHistory, createRouter, RouteRecordRaw } from 'vue-router'
 import DefaultLayout from '~/components/layouts/DefaultLayout.vue'
+import LandingPage from '~/components/pages/LandingPage.vue'
+import MelodiesCommunityPage from '~/components/pages/MelodiesCommunityPage.vue'
 import MusicPage from '~/components/pages/MusicPage.vue'
 import AboutPage from '~/components/pages/AboutPage.vue'
 import TestPage from '~/components/pages/TestPage.vue'
@@ -57,7 +59,17 @@ const routes = [
       {
         name: 'home',
         path: '',
+        component: LandingPage
+      },
+      {
+        name: 'music',
+        path: 'music',
         component: MusicPage
+      },
+      {
+        name: 'community',
+        path: 'community',
+        component: MelodiesCommunityPage
       },
       {
         name: 'about',

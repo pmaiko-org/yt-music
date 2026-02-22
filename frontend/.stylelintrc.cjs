@@ -16,6 +16,7 @@ module.exports = {
     "scss/at-extend-no-missing-placeholder": null,
     "no-empty-source": null,
     "at-rule-no-unknown": null,
-    "no-descending-specificity": null
+    "no-descending-specificity": null,
+    "selector-class-pattern": null,
   }
 }
