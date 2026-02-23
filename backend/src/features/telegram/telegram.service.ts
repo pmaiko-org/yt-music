@@ -27,13 +27,13 @@ export class TelegramService implements OnModuleInit {
       polling: !this.isProd,
     });
 
-    if (this.isProd) {
-      const webhookUrl = `${this.serverAddress}/bot${this.telegramBotToken}`;
-      this.bot
-        .setWebHook(webhookUrl)
-        .then(() => console.log('Webhook set successfully:', webhookUrl))
-        .catch((err) => console.error('Error setting webhook:', err));
-    }
+    // if (this.isProd) {
+    //   const webhookUrl = `${this.serverAddress}/bot${this.telegramBotToken}`;
+    //   this.bot
+    //     .setWebHook(webhookUrl)
+    //     .then(() => console.log('Webhook set successfully:', webhookUrl))
+    //     .catch((err) => console.error('Error setting webhook:', err));
+    // }
 
     this.registerHandlers();
   }

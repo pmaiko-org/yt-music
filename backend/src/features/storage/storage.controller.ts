@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Controller,
   Get,
   Post,
@@ -19,11 +20,32 @@ export class StorageController {
     }),
   )
   async uploadFile(@UploadedFile() file: Express.Multer.File) {
+    const { parseBuffer, selectCover, getSupportedMimeTypes } = await import(
+      'music-metadata'
+    );
+
+    if (!getSupportedMimeTypes().includes(file.mimetype)) {
+      throw new BadRequestException('File type is not supported.');
+    }
+
+    const data = await parseBuffer(file.buffer);
+    const cover = selectCover(data.common.picture);
+
     await this.googleDriveService.uploadFile(
       file.buffer,
       file.originalname,
       file.mimetype,
     );
+
+    if (cover) {
+      await this.googleDriveService.uploadFile(
+        Buffer.from(cover.data),
+        '1',
+        cover.format,
+      );
+    }
+
+    return data
   }
 
   @Get()

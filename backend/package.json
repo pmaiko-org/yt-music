@@ -28,17 +28,21 @@
     "@nestjs/core": "^11.0.1",
     "@nestjs/mapped-types": "*",
     "@nestjs/platform-express": "^11.0.1",
+    "@nestjs/typeorm": "^11.0.0",
     "axios": "^1.13.2",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.3",
     "googleapis": "^168.0.0",
     "mime-types": "^3.0.2",
     "mo": "^1.7.3",
+    "music-metadata": "^11.12.1",
     "nest-commander": "^3.20.1",
     "node-html-parser": "^7.0.1",
     "node-telegram-bot-api": "^0.67.0",
+    "pg": "^8.18.0",
     "reflect-metadata": "^0.2.2",
-    "rxjs": "^7.8.1"
+    "rxjs": "^7.8.1",
+    "typeorm": "^0.3.28"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",

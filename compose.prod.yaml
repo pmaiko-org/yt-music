@@ -22,8 +22,14 @@ services:
     networks:
       - internal_network
     environment:
-      SERVER_ADDRESS: ${SERVER_ADDRESS}
       PORT: ${BACKEND_PORT}
+
+      DB_HOST: "${PROJECT_PREFIX}-db"
+      DB_PORT: ${POSTGRES_PORT}
+      DB_USER: ${POSTGRES_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      DB_DATABASE: ${POSTGRES_DB}
+
       NODE_ENV: "production"
       TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
       GOOGLE_API_KEY: ${GOOGLE_API_KEY}
@@ -33,3 +39,7 @@ services:
       GOOGLE_REFRESH_TOKEN: ${GOOGLE_REFRESH_TOKEN}
       GOOGLE_REDIRECT_URI: ${GOOGLE_REDIRECT_URI}
       GOOGLE_DRIVE_FOLDER_ID: ${GOOGLE_DRIVE_FOLDER_ID}
+
+  db:
+    ports:
+      - "${POSTGRES_PORT}:${POSTGRES_PORT}"

@@ -12,7 +12,7 @@ prod: create-network
 	docker compose --env-file .env -f $(COMPOSE_BASE) -f $(COMPOSE_PROD) up --build -d --remove-orphans
 
 down:
-	docker compose --env-file .env -f $(COMPOSE_BASE) -f $(COMPOSE_DEV) -f $(COMPOSE_PROD) down
+	docker compose --env-file .env -f $(COMPOSE_BASE) -f $(COMPOSE_DEV) -f $(COMPOSE_PROD) down --remove-orphans --volumes
 
 rebuild:
 	docker compose --env-file .env -f $(COMPOSE_BASE) -f $(COMPOSE_DEV) build --no-cache

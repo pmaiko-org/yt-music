@@ -1,7 +1,15 @@
 const vars = {
-  serverAddress: process.env.SERVER_ADDRESS || '',
   port: process.env.PORT || 3000,
   isProd: process.env.NODE_ENV === 'production',
+
+  db: {
+    host: process.env.DB_HOST,
+    port: Number(process.env.DB_PORT) || 5432,
+    username: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_DATABASE,
+  },
+
   telegramBotToken: process.env.TELEGRAM_BOT_TOKEN || '',
   googleApiKey: process.env.GOOGLE_API_KEY || '',
   googleServiceAccountKey: process.env.GOOGLE_SERVICE_ACCOUNT_KEY || '',

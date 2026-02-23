@@ -14,3 +14,17 @@ networks:
 
 volumes:
   db-data:
+
+services:
+  db:
+    image: postgres:17-alpine
+    container_name: "${PROJECT_PREFIX}-db"
+    shm_size: 128mb
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    networks:
+      - internal_network
