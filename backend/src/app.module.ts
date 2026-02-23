@@ -10,7 +10,7 @@ import { CatsModule } from './features/cats/cats.module';
 import { TelegramModule } from './features/telegram/telegram.module';
 import { StorageModule } from './features/storage/storage.module';
 import { GoogleDriveModule } from './features/google-drive/google-drive.module';
-import configuration from './config/configuration';
+import configuration, { EnvironmentVariables } from './config/configuration';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
@@ -22,14 +22,17 @@ import { TypeOrmModule } from '@nestjs/typeorm';
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: (configService: ConfigService) => {
+      useFactory: (configService: ConfigService<EnvironmentVariables>) => {
+        const db = configService.get('db', { infer: true })!;
+
         return {
-          host: configService.get('db.host'),
           type: 'postgres',
-          port: configService.get('db.port'),
-          username: configService.get('db.username'),
-          password: configService.get('db.password'),
-          database: configService.get('db.database'),
+          host: db.host,
+          port: db.port,
+          username: db.username,
+          password: db.password,
+          database: db.database,
+          entities: [__dirname + '/features/**/*.entity{.ts,.js}'],
           synchronize: true,
           charset: 'utf8mb4_unicode_ci',
         };
