@@ -1,2 +1,3 @@
 # node 18.14.1
-test1
+test
+docker builder prune -f

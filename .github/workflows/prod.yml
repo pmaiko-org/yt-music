@@ -16,5 +16,8 @@ jobs:
       - name: Copy .env from server
         run: cp /home/petya/projects/yt-music/.env .env
 
+      - name: Sync code to server folder
+        run: rsync -av --delete ./ /home/petya/projects/yt-music/
+
       - name: Run make prod
         run: make prod
