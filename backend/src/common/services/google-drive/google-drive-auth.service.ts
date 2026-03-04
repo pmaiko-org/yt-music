@@ -3,7 +3,7 @@ import { google } from 'googleapis';
 import { OAuth2Client } from 'google-auth-library/build/src/auth/oauth2client';
 import * as readline from 'readline';
 import { ConfigService } from '@nestjs/config';
-import { EnvironmentVariables } from '../../config/configuration';
+import { EnvironmentVariables } from '../../../config/configuration';
 
 @Injectable()
 export class GoogleDriveAuthService {

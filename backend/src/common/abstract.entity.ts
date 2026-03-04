@@ -4,7 +4,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-export abstract class AbstractEntity {
+export abstract class AbstractEntity<T> {
   @PrimaryGeneratedColumn('uuid')
   readonly id: string;
 
@@ -13,4 +13,8 @@ export abstract class AbstractEntity {
 
   @UpdateDateColumn()
   readonly updatedAt: Date;
+
+  constructor(entity: Partial<T>) {
+    Object.assign(this, entity);
+  }
 }

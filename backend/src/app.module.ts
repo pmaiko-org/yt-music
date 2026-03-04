@@ -4,14 +4,14 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { LoggerModule } from './common/logger/logger.module';
 import { RequestModule } from './common/request/request.module';
-import { HelperModule } from './common/services/helper.module';
-import { MusicModule } from './features/music/music.module';
-import { CatsModule } from './features/cats/cats.module';
-import { TelegramModule } from './features/telegram/telegram.module';
-import { StorageModule } from './features/storage/storage.module';
-import { GoogleDriveModule } from './features/google-drive/google-drive.module';
+import { HelperModule } from './common/services/helper/helper.module';
+import { MusicModule } from './modules/music/music.module';
+import { CatsModule } from './modules/cats/cats.module';
+import { TelegramModule } from './modules/telegram/telegram.module';
+import { GoogleDriveModule } from './common/services/google-drive/google-drive.module';
 import configuration, { EnvironmentVariables } from './config/configuration';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ImageOptimizerModule } from './common/services/image-optimizer/image-optimizer.module';
 
 @Module({
   imports: [
@@ -32,7 +32,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
           username: db.username,
           password: db.password,
           database: db.database,
-          entities: [__dirname + '/features/**/*.entity{.ts,.js}'],
+          entities: [__dirname + '/modules/**/*.entity{.ts,.js}'],
           synchronize: true,
           charset: 'utf8mb4_unicode_ci',
         };
@@ -41,11 +41,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
     LoggerModule,
     RequestModule,
     HelperModule,
-    MusicModule,
+
     CatsModule,
+    MusicModule,
     TelegramModule,
-    StorageModule,
-    GoogleDriveModule,
   ],
   controllers: [AppController],
   providers: [AppService],

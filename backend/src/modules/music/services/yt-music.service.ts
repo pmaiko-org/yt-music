@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { google, youtube_v3 } from 'googleapis';
 import { ConfigService } from '@nestjs/config';
-import { GoogleMusicQueryDto } from '../dto/google.music.query.dto';
-import { GooglePaginatedResponseDto } from '../dto/google.paginated.response.dto';
-import { HelperService } from '../../../common/services/helper.service';
+import { YtPlaylistQueryDto } from '../dto/yt-playlist.query.dto';
+import { ytPlaylistResponseDto } from '../dto/yt-playlist.response.dto';
+import { HelperService } from '../../../common/services/helper/helper.service';
 import { Mp3wrParserService } from '../parsers/mp3wr-parser.service';
 
 @Injectable()
@@ -21,7 +21,7 @@ export class YtMusicService {
     });
   }
 
-  async getPlaylistItems(query: GoogleMusicQueryDto) {
+  async getPlaylist(query: YtPlaylistQueryDto) {
     const response = await this.youtube.playlistItems.list({
       part: ['id', 'snippet'],
       playlistId: query.playlistId || 'PLRUeMuoAjPeAEAPYC6wOWTkto-fXC5GRh',
@@ -63,7 +63,7 @@ export class YtMusicService {
     const totalResults = response.data.pageInfo?.totalResults || 0;
     const nextPageToken = response.data.nextPageToken || null;
 
-    return new GooglePaginatedResponseDto(musicTracks, {
+    return new ytPlaylistResponseDto(musicTracks, {
       nextPageToken,
       perPage: resultsPerPage,
       total: totalResults,

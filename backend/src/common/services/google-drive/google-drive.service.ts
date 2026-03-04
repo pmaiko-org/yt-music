@@ -3,9 +3,9 @@ import { ConfigService } from '@nestjs/config';
 import { drive_v3, google } from 'googleapis';
 import { JWT } from 'google-auth-library/build/src/auth/jwtclient';
 import { OAuth2Client } from 'google-auth-library/build/src/auth/oauth2client';
-import { EnvironmentVariables } from '../../config/configuration';
+import { EnvironmentVariables } from '../../../config/configuration';
 import { Readable } from 'node:stream';
-import { HelperService } from '../../common/services/helper.service';
+import { HelperService } from '../helper/helper.service';
 import * as fs from 'node:fs';
 
 type AuthType = JWT | OAuth2Client;
@@ -14,12 +14,15 @@ type AuthType = JWT | OAuth2Client;
 export class GoogleDriveService {
   private readonly authClient: AuthType;
   private readonly googleDriveFolderId: string;
+  private driveInstance: drive_v3.Drive;
+
   constructor(
     private readonly configService: ConfigService<EnvironmentVariables>,
     private readonly helperService: HelperService,
   ) {
     this.authClient = this.getOAuthClient();
     this.googleDriveFolderId = this.configService.get('googleDriveFolderId')!;
+    this.driveInstance = google.drive({ version: 'v3', auth: this.authClient });
   }
 
   getOAuthClient() {
@@ -49,17 +52,15 @@ export class GoogleDriveService {
     try {
       await auth.authorize();
       return auth;
-    } catch (error) {
-      if (error instanceof Error) {
-        throw new Error(`Error authorizing Google Drive API: ${error.message}`);
-      }
+    } catch (error: unknown) {
+      throw new Error('Error authorizing Google Drive API', {
+        cause: error,
+      });
     }
   }
 
   async listFiles() {
-    const drive = google.drive({ version: 'v3', auth: this.authClient });
-
-    const response = await drive.files.list({
+    const response = await this.driveInstance.files.list({
       pageSize: 100,
       q: `'${this.googleDriveFolderId}' in parents and trashed = false`,
       fields: 'files(id, name)',
@@ -72,15 +73,20 @@ export class GoogleDriveService {
     return Buffer.from('test');
   }
 
-  async uploadFile(buffer: Buffer, filename: string, mimetype?: string) {
-    const drive = google.drive({ version: 'v3', auth: this.authClient });
+  async uploadFile(
+    buffer: Buffer,
+    filename: string,
+    mimetype?: string,
+    properties?: drive_v3.Schema$File['properties'],
+  ): Promise<drive_v3.Schema$File | undefined> {
     const stream = Readable.from(buffer);
 
     try {
-      const response = await drive.files.create({
+      const response = await this.driveInstance.files.create({
         requestBody: {
           name: filename,
           parents: [this.googleDriveFolderId], // petyamaiko/yt-music
+          properties,
         },
         media: {
           mimeType: mimetype || this.helperService.getMimeType(filename),
@@ -89,40 +95,31 @@ export class GoogleDriveService {
         fields: 'id, name',
       });
 
-      if (response) {
-        console.log('File uploaded successfully. File ID:', response.data.id);
-        return response.data;
-      }
-    } catch (error) {
-      if (error instanceof Error) {
-        throw new Error(
-          `Error uploading file to Google Drive: ${error.message}`,
-        );
-      }
+      // console.log('File uploaded successfully. File ID:', response.data.id);
+
+      return response.data;
+    } catch (error: unknown) {
+      throw new Error('Error uploading file to Google Drive', {
+        cause: error,
+      });
     }
   }
 
   async deleteFile(fileId: string) {
-    const drive = google.drive({ version: 'v3', auth: this.authClient });
-
     try {
-      await drive.files.delete({
+      await this.driveInstance.files.delete({
         fileId: fileId,
       });
 
-      console.log('File deleted successfully.');
-    } catch (error) {
-      if (error instanceof Error) {
-        throw new Error(
-          `Error deleting file from Google Drive: ${error.message}`,
-        );
-      }
+      // console.log('File deleted successfully.');
+    } catch (error: unknown) {
+      throw new Error('Error deleting file from Google Drive', {
+        cause: error,
+      });
     }
   }
 
   async updateFile(fileId: string, filePath: string) {
-    const drive = google.drive({ version: 'v3', auth: this.authClient });
-
     const fileMetadata = {
       name: filePath.split('/').pop(), // Extract file name from path
     };
@@ -133,27 +130,23 @@ export class GoogleDriveService {
     };
 
     try {
-      const response = await drive.files.update({
+      await this.driveInstance.files.update({
         requestBody: fileMetadata,
         fileId: fileId,
         media: media,
       });
 
-      console.log('File updated successfully.', response);
-    } catch (error) {
-      if (error instanceof Error) {
-        throw new Error(
-          `Error updating file in Google Drive: ${error.message}`,
-        );
-      }
+      // console.log('File updated successfully.', response);
+    } catch (error: unknown) {
+      throw new Error('Error updating file in Google Drive', {
+        cause: error,
+      });
     }
   }
 
   async getFileByName(filename: string) {
-    const drive = google.drive({ version: 'v3', auth: this.authClient });
-
     try {
-      const response = await drive.files.list({
+      const response = await this.driveInstance.files.list({
         q: `'${this.googleDriveFolderId}' in parents and name='${filename}' and trashed=false`,
         fields: 'files(id, name, mimeType)',
         pageSize: 1,
@@ -161,23 +154,36 @@ export class GoogleDriveService {
 
       const files = response.data.files;
       if (files?.length) {
-        console.log('Found file:', files[0].name, files[0].id);
+        // console.log('Found file:', files[0].name, files[0].id);
         return files[0];
       } else {
-        console.log('No file found with this name.');
+        // console.log('No file found with this name.');
         return null;
       }
     } catch (error) {
-      if (error instanceof Error) {
-        throw new Error(`Error getting file by name: ${error.message}`);
-      }
+      throw new Error('Error getting file by name', {
+        cause: error,
+      });
+    }
+  }
+
+  async getFileById(fileId: string): Promise<drive_v3.Schema$File> {
+    try {
+      const response = await this.driveInstance.files.get({
+        fileId,
+        fields: 'id, name, mimeType, size, properties',
+      });
+
+      return response.data;
+    } catch (error: unknown) {
+      throw new Error('Error getting file by ID', {
+        cause: error,
+      });
     }
   }
 
   async getStream(file: drive_v3.Schema$File) {
-    const drive = google.drive({ version: 'v3', auth: this.authClient });
-
-    const fileRes = await drive.files.get(
+    const fileResponse = await this.driveInstance.files.get(
       {
         fileId: file.id!,
         alt: 'media',
@@ -188,9 +194,12 @@ export class GoogleDriveService {
     );
 
     return {
-      stream: fileRes.data,
-      mimeType: file.mimeType || 'application/octet-stream',
+      stream: fileResponse.data,
       name: file.name,
+      filename: file.properties?.filename || file.name || 'unknown',
+      mimeType: file.mimeType || 'application/octet-stream',
+      size: file.size,
+      isAudio: 'true' === file.properties?.isAudio,
     };
   }
 }

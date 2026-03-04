@@ -1,6 +1,6 @@
 import { ResponseInterface } from './response.interface';
 
-export interface PaginatedResponseInterface<T, M = PaginationMetaInterface>
+export interface PaginationResponseInterface<T, M = PaginationMetaInterface>
   extends ResponseInterface<T[], M> {
   data: T[];
   meta: M;

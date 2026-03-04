@@ -2,7 +2,7 @@ import { Injectable, OnModuleInit } from '@nestjs/common';
 import TelegramBot, { Message } from 'node-telegram-bot-api';
 import { ConfigService } from '@nestjs/config';
 import { YtMusicService } from '../music/services/yt-music.service';
-import { GoogleMusicQueryDto } from '../music/dto/google.music.query.dto';
+import { YtPlaylistQueryDto } from '../music/dto/yt-playlist.query.dto';
 
 @Injectable()
 export class TelegramService implements OnModuleInit {
@@ -68,8 +68,8 @@ export class TelegramService implements OnModuleInit {
 
     this.bot.onText(/\/playlist/, async (msg: Message) => {
       const chatId = msg.chat.id;
-      const { data } = await this.ytMusicService.getPlaylistItems(
-        new GoogleMusicQueryDto(),
+      const { data } = await this.ytMusicService.getPlaylist(
+        new YtPlaylistQueryDto(),
       );
       data.forEach((item) => {
         if (item.audio.src) {

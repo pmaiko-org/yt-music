@@ -24,4 +24,8 @@ export class HelperService {
   getMimeType(filename: string): string {
     return lookup(filename) || '';
   }
+
+  getMimeTypeWebp(): string {
+    return lookup('webp') || '';
+  }
 }
