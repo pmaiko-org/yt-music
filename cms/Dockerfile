@@ -18,6 +18,7 @@ FROM node:22-alpine
 RUN apk add --no-cache vips-dev
 ARG NODE_ENV=production
 ENV NODE_ENV=${NODE_ENV}
+ENV NODE_OPTIONS="--max-old-space-size=4096"
 WORKDIR /opt/
 COPY --from=build /opt/node_modules ./node_modules
 WORKDIR /opt/app
