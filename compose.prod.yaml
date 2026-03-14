@@ -49,3 +49,5 @@ services:
     build:
       context: ./cms
       dockerfile: Dockerfile
+    environment:
+      DATABASE_HOST: "${PROJECT_PREFIX}-db"
