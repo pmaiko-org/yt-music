@@ -2,3 +2,4 @@
 test
 docker builder prune -f
 docker exec -it p-yt-music-db psql -U admin -d cms
+docker logs -f p-yt-music-cms

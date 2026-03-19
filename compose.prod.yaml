@@ -43,7 +43,7 @@ services:
   db:
     container_name: "${PROJECT_PREFIX}-db"
     ports:
-      - "${POSTGRES_PORT}:${POSTGRES_PORT}"
+      - "${POSTGRES_PORT}:5432"
 
   cms:
     build:
